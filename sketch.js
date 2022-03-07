@@ -102,9 +102,9 @@ function draw() {
   // background(0);
   clear()
 
-  let tintAmt = map(pos, 0, -10000, 255, 0);
+  // let tintAmt = map(pos, 0, -10000, 255, 0);
   // tint(255, tintAmt); // Apply transparency without
-  // image(bgImg, 0, 0, width, height);
+  image(bgImg, 0, 0, width, height);
 
   if (whalePos != pos) {
     whalePos += (pos - whalePos) / 20;
