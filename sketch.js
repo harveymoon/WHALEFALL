@@ -36,6 +36,7 @@ function setGradient(c1, c2) {
     inter += random() / 100 - random() / 50;
     var c = lerpColor(c1, c2, inter);
     bgImg.stroke(c);
+    bgImg.strokeWeight(2)
     bgImg.line(0, y, width, y);
   }
 
@@ -57,8 +58,12 @@ function setGradient(c1, c2) {
 }
 let imgCount = 0;
 
+// function windowResized(){
+//   resizeCanvas(windowWidth,windowHeight)
+// }
+
 function setup() {
-  createCanvas(800, 800);
+  createCanvas(windowWidth, windowHeight);
   bgImg = createGraphics(width, height);
 
   c1 = color(0, 15, 40);
