@@ -3,7 +3,12 @@ var Bimg;
 var timer = 0;
 var particles = [];
 
+var pos = 0.5;
+var whalePos = -250;
+
 var bgImg;
+
+var viewState = 0;
 
 var poem = [
 ["The mighty leviathan,"],
@@ -23,7 +28,11 @@ var poem = [
 ["And now it lies as bones"],
 ["In the depths of the ocean."]]
 
+
+  
+var fontRegular;
 function preload() {
+  fontRegular = loadFont('font/Rajdhani-Light.ttf');
   Wimg = loadImage("img/whalefall_01-2@0.25x.png");
   Bimg = loadImage("img/whalefall_01bones_.png");
 }
@@ -63,7 +72,7 @@ let imgCount = 0;
 // }
 
 function setup() {
-  createCanvas(windowWidth, windowHeight);
+  createCanvas(1280, 800);
   bgImg = createGraphics(width, height);
 
   c1 = color(0, 15, 40);
@@ -76,13 +85,12 @@ function setup() {
   noStroke();
 }
 
-var pos = 0;
-var whalePos = 0;
+
 
 function mouseWheel(event) {
   // print(pos);
   //move the square according to the vertical scroll amount
-  pos -= constrain(event.delta, -20, 20);
+  pos += constrain(event.delta, -20, 20);
 }
 
 // let lastPic = 0;
@@ -90,8 +98,24 @@ function mousePressed() {
   save("img.png");
 }
 
+let drawCount = 0;
+
 function draw() {
-  timer += 0.05;
+  image(bgImg, 0, 0, width, height);
+  timer += 0.015;
+drawCount++;
+
+// if(drawCount < 500){
+
+let drifty = map(constrain(drawCount,00,2000),0,2000,height+100,0)
+let driftx = (100 + noise(drawCount/100, drifty)*10)
+
+fill(186, 161, 48)
+textSize(24);
+  textFont(fontRegular)
+  text('whalefall',100,drifty)
+// }
+
 
   //   if(lastPic == 0){
   //     save(imgCount+'.jpg')
@@ -105,21 +129,33 @@ function draw() {
   //     imgCount++
   //   }
   // background(0);
-  clear()
+  
 
   // let tintAmt = map(pos, 0, -10000, 255, 0);
   // tint(255, tintAmt); // Apply transparency without
-  image(bgImg, 0, 0, width, height);
+  
 
   if (whalePos != pos) {
-    whalePos += (pos - whalePos) / 20;
+    whalePos += constrain( (pos - whalePos) / 50, -1.2,1.2);
+  }
+
+  if(whalePos > 0){
+    if(viewState == 0){
+      viewState++
+      console.log("viewState : " + viewState)
+    }
+   
+    pos = height-400
+
   }
   // pos += 0.1;
-  image(Bimg, width / 2 - Bimg.width / 2, height / 2 + whalePos);
-  push();
-  translate(80, 400 + whalePos);
-  showParticles();
+  image(Bimg, width / 2 - Bimg.width / 2,  whalePos);
 
+  push();
+  translate(width / 2 - Bimg.width / 2,  whalePos);
+   
+    showParticles();
+  
   pop();
 }
 
@@ -145,11 +181,15 @@ class particle {
   constructor(x, y, colorHere) {
     this.loc = createVector(x, y);
     this.color = color(colorHere[0], colorHere[1], colorHere[2]);
-    this.timer = random(-5000, 0);
+    this.timer = random(-5000, -500);
   }
 
   drawIt() {
     this.timer++;
+    if(this.timer > 1000){
+      return
+    }
+
     fill(this.color);
     rect(this.loc.x * 4, this.loc.y * 4, 4.5, 4.5);
     if (this.timer > 10) {
