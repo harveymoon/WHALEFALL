@@ -255,7 +255,7 @@ class PoemFlow{
     this.PoemLine = textLine;
     this.color = color(255,255,255)
     this.locN = createVector(200, height);
-    this.range = [(idx)*250, ((idx)*250)+800]
+    this.range = [(idx)*180, ((idx)*180)+800]
     if(idx = 0){
       this.range[0] = -200
       this.range[1] = 2500
