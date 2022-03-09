@@ -11,22 +11,26 @@ var bgImg;
 var viewState = 0;
 
 var poem = [
-["The mighty leviathan,"],
-["King of the seas,"],
-["Has been reduced to"],
-["A carcass on the floor."],
-["They cut it open,"],
+["whalefall"],
+["the mighty leviathan,"],
+["king of the seas,"],
+["has been reduced to"],
+["a carcass on the floor."],
+["they cut it open,"],
 ["knives slicing through"],
-["The blubber and the meat,"],
-["Their greed insatiable."],
-["They take what they can,"],
-["Leaving nothing behind,"],
-["Until there is nothing left"],
-["But a skeleton of once was."],
-["The whale is gone,"],
-["Its resources plundered,"],
-["And now it lies as bones"],
-["In the depths of the ocean."]]
+["the blubber and the meat,"],
+["their greed insatiable."],
+["they take what they can,"],
+["leaving nothing behind,"],
+["until there is nothing left"],
+["but a skeleton of once was."],
+["the whale is gone,"],
+["its resources plundered,"],
+["and now it lies as bones"],
+["in the depths of the ocean."]
+]
+
+var poemLines = []
 
 
   
@@ -83,9 +87,41 @@ function setup() {
   convertImage();
   frameRate(15);
   noStroke();
+  textWrap(WORD);
+
+for(let pl = 0; pl < poem.length; pl++){
+  let newLine = new PoemFlow(poem[pl], pl)
+  poemLines.push(newLine )
+}
+
+poemLines[0].color = color(186, 161, 48)
+
 }
 
 
+function drawTickers(){
+
+  textSize(12)
+  for(let lineN = 0; lineN <200; lineN++){
+    if(lineN%2 == 0){
+      stroke(200)
+      strokeWeight(.5)
+      line(width-68, lineN*100, width, lineN*100)
+      noStroke()
+      fill(200)
+      textAlign(LEFT);
+      text('2000', width-68, (lineN*100) +textAscent())
+
+
+      textAlign(RIGHT);
+      text("Pinta Giant Tortoise", width-63, (lineN*100) + (textAscent()*3))
+
+      text("C02 in the atmosphere has passed 400ppm", width-63-160, (lineN*100) + (textAscent()*5), 160)
+    }else{
+      line(width-23, lineN*100, width, lineN*100)
+    }
+  }
+}
 
 function mouseWheel(event) {
   // print(pos);
@@ -94,27 +130,40 @@ function mouseWheel(event) {
 }
 
 // let lastPic = 0;
-function mousePressed() {
-  save("img.png");
-}
+// function mousePressed() {
+//   save("img.png");
+// }
 
 let drawCount = 0;
 
 function draw() {
   image(bgImg, 0, 0, width, height);
   timer += 0.015;
-drawCount++;
+  drawCount++;
 
-// if(drawCount < 500){
 
-let drifty = map(constrain(drawCount,00,2000),0,2000,height+100,0)
-let driftx = (100 + noise(drawCount/100, drifty)*10)
+// if( drawCount < 1000){
+//     let drifty = map(constrain(drawCount,00,2000),0,2000,height+100,0)
+//     let driftx = (100 + noise(drawCount/1000, drifty/1000)*100)
 
-fill(186, 161, 48)
-textSize(24);
-  textFont(fontRegular)
-  text('whalefall',100,drifty)
+//     let opacT = constrain(drawCount,300,1000)
+//     opacT = map(opacT, 300,1000, 200,0)
+
+//     fill(186, 161, 48, opacT)
+//     textSize(24);
+//     textFont(fontRegular)
+//     text('whalefall',100+driftx,drifty)
 // }
+  
+textSize(24);
+textFont(fontRegular)
+
+for (let pl = 0; pl < poemLines.length; pl++) {
+  let element = poemLines[pl];
+  if(element.PoemLine){
+    poemLines[pl].drawMove();
+  }
+}
 
 
   //   if(lastPic == 0){
@@ -136,7 +185,7 @@ textSize(24);
   
 
   if (whalePos != pos) {
-    whalePos += constrain( (pos - whalePos) / 50, -1.2,1.2);
+    whalePos += constrain( (pos - whalePos) / 50, -1,1);
   }
 
   if(whalePos > 0){
@@ -144,19 +193,19 @@ textSize(24);
       viewState++
       console.log("viewState : " + viewState)
     }
-   
     pos = height-400
-
   }
   // pos += 0.1;
   image(Bimg, width / 2 - Bimg.width / 2,  whalePos);
 
   push();
   translate(width / 2 - Bimg.width / 2,  whalePos);
-   
-    showParticles();
-  
+  noStroke();
+  showParticles();
   pop();
+
+ drawTickers()
+
 }
 
 function convertImage() {
@@ -196,5 +245,38 @@ class particle {
       this.loc.y -= 0.15;
       this.loc.x += (noise(this.loc.x / 25, this.loc.y / 25) - 0.5) / 2;
     }
+  }
+}
+
+
+class PoemFlow{
+  constructor(textLine, idx){
+    this.index = idx;
+    this.PoemLine = textLine;
+    this.color = color(255,255,255)
+    this.locN = createVector(200, height);
+    this.range = [(idx)*250, ((idx)*250)+800]
+    if(idx = 0){
+      this.range[0] = -200
+      this.range[1] = 2500
+    }
+  }
+
+  drawMove(){
+
+    this.locN.y = 100+ map(constrain(drawCount,this.range[0],this.range[1]),this.range[0],this.range[1],height+100,0)
+    this.locN.x = (200 + noise(drawCount/500, this.locN.y/500)*200)
+
+    let opacH = map(constrain(drawCount,this.range[0],this.range[1]),this.range[0],this.range[1],255,0)
+    opacH = int(opacH)
+    // opacT = map(opacT, this.range[0],this.range[1], 255*.8, 0)
+    // let opacT = 255;
+    textSize(24)
+    noStroke();
+    // fill(red(this.color), green(this.color), blue(this.color) ,opacH)
+    this.color.setAlpha(opacH)
+    fill(this.color)
+    // this.color.setAlpha(this.color.alpha-.5);
+    text( this.PoemLine, this.locN.x, this.locN.y)
   }
 }
