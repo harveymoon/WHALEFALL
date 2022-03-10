@@ -5,40 +5,53 @@ var particles = [];
 
 var pos = 0.5;
 var whalePos = -250;
+var sliderPos = 0;
 
 var bgImg;
 
 var viewState = 0;
 
+var timeData;
+
+var sliderOffsetY = -3500;
+
 var poem = [
-["whalefall"],
-["the mighty leviathan,"],
-["king of the seas,"],
-["has been reduced to"],
-["a carcass on the floor."],
-["they cut it open,"],
-["knives slicing through"],
-["the blubber and the meat,"],
-["their greed insatiable."],
-["they take what they can,"],
-["leaving nothing behind,"],
-["until there is nothing left"],
-["but a skeleton of once was."],
-["the whale is gone,"],
-["its resources plundered,"],
-["and now it lies as bones"],
-["in the depths of the ocean."]
+  ["whalefall"],
+  ["the mighty leviathan,"],
+  ["king of the seas,"],
+  ["has been discarded"],
+  ["a giant carcass"],
+  ["they cut it open"],
+  ["knives slicing through"],
+  ["the blubber, oil and meat,"],
+  ["miraculous plenty"],
+  ["they take whatever they can"],
+  ["leaving nothing behind"],
+  ["but a skeleton of what once was"],
+  ["the whale is no longer"],
+  ["its life plundered"],
+  ["and now, just bones"],
+  ["in the empty ocean"]
 ]
 
 var poemLines = []
-
-
   
 var fontRegular;
+
 function preload() {
   fontRegular = loadFont('font/Rajdhani-Light.ttf');
+
+if(random()>.5){
   Wimg = loadImage("img/whalefall_01-2@0.25x.png");
   Bimg = loadImage("img/whalefall_01bones_.png");
+}else{
+Wimg = loadImage("img/v2_post@0.25x.png");
+   Bimg = loadImage("img/v2_bonez.png");
+}
+
+
+   
+  timeData = loadJSON("timeData.json")
 }
 
 function setGradient(c1, c2) {
@@ -77,6 +90,9 @@ let imgCount = 0;
 
 function setup() {
   createCanvas(1280, 800);
+  // noSmooth()
+  smooth()
+
   bgImg = createGraphics(width, height);
 
   c1 = color(0, 15, 40);
@@ -101,25 +117,48 @@ poemLines[0].color = color(186, 161, 48)
 
 function drawTickers(){
 
-  textSize(12)
-  for(let lineN = 0; lineN <200; lineN++){
-    if(lineN%2 == 0){
-      stroke(200)
-      strokeWeight(.5)
-      line(width-68, lineN*100, width, lineN*100)
-      noStroke()
-      fill(200)
-      textAlign(LEFT);
-      text('2000', width-68, (lineN*100) +textAscent())
+  if(drawCount<800){
+    return
+  }
+
+let lineOpac = int(map(constrain(drawCount,800,1200),500,2000,0,150));
+let textOpac = int(map(constrain(drawCount,1000,1200),800,2000,0,150));
+
+// let lineOpac = 255
+// let textOpac = 255
 
 
-      textAlign(RIGHT);
-      text("Pinta Giant Tortoise", width-63, (lineN*100) + (textAscent()*3))
+textSize(13)
+for(let lineN = 0; lineN <200; lineN++){
+  if(lineN%2 == 0){
+  stroke(200, lineOpac)
+  strokeWeight(.5)
+  line(width-68, lineN*100, width, lineN*100)
+  noStroke()
+  fill(200, textOpac)
+  textAlign(LEFT);
+  yearN = 2000+floor(lineN/2)
+  // print(yearN)
 
-      text("C02 in the atmosphere has passed 400ppm", width-63-160, (lineN*100) + (textAscent()*5), 160)
-    }else{
-      line(width-23, lineN*100, width, lineN*100)
+  text(str(yearN), width-68, (lineN*100) +textAscent())
+  textAlign(RIGHT);
+  if(timeData[str(yearN)]!=null){
+  text(timeData[str(yearN)][0]['title'], width-63-160, (lineN*100) + (textAscent()*3), 160)
+  }
+
+  }else{
+    stroke(200, lineOpac)
+    strokeWeight(.5)
+    line(width-24, lineN*100, width, lineN*100)
+
+    if(timeData[str(yearN)]!=null){
+      if(timeData[str(yearN)].length>1){
+        noStroke();
+        fill(200, textOpac)
+        text(timeData[str(yearN)][1]['title'], width-63-160, (lineN*100) + (textAscent()*3), 160)
+      }
     }
+  }
   }
 }
 
@@ -182,18 +221,23 @@ for (let pl = 0; pl < poemLines.length; pl++) {
 
   // let tintAmt = map(pos, 0, -10000, 255, 0);
   // tint(255, tintAmt); // Apply transparency without
-  
+    if (sliderPos != pos) {
+    sliderPos += constrain( (pos - sliderPos) / 10, -1,1);
+  }
 
   if (whalePos != pos) {
-    whalePos += constrain( (pos - whalePos) / 50, -1,1);
+    whalePos += constrain( (pos - whalePos) / 250, -1,1);
   }
+
+
 
   if(whalePos > 0){
     if(viewState == 0){
+       pos = height-400
       viewState++
       console.log("viewState : " + viewState)
     }
-    pos = height-400
+   
   }
   // pos += 0.1;
   image(Bimg, width / 2 - Bimg.width / 2,  whalePos);
@@ -204,7 +248,10 @@ for (let pl = 0; pl < poemLines.length; pl++) {
   showParticles();
   pop();
 
+push()
+translate(0, -sliderPos+sliderOffsetY)
  drawTickers()
+ pop()
 
 }
 
@@ -230,20 +277,20 @@ class particle {
   constructor(x, y, colorHere) {
     this.loc = createVector(x, y);
     this.color = color(colorHere[0], colorHere[1], colorHere[2]);
-    this.timer = random(-5000, -500);
+    this.timer = random(-15000, -500);
   }
 
   drawIt() {
     this.timer++;
-    if(this.timer > 1000){
-      return
-    }
+    // if(this.timer > 1000){
+    //   return
+    // }
 
     fill(this.color);
     rect(this.loc.x * 4, this.loc.y * 4, 4.5, 4.5);
     if (this.timer > 10) {
-      this.loc.y -= 0.15;
-      this.loc.x += (noise(this.loc.x / 25, this.loc.y / 25) - 0.5) / 2;
+      this.loc.y -= 0.075;
+      this.loc.x += (noise(this.loc.x / 25, this.loc.y / 25) - 0.5) / 4;
     }
   }
 }
@@ -254,8 +301,8 @@ class PoemFlow{
     this.index = idx;
     this.PoemLine = textLine;
     this.color = color(255,255,255)
-    this.locN = createVector(200, height);
-    this.range = [(idx)*180, ((idx)*180)+800]
+    this.locN = createVector(50, height);
+    this.range = [(idx)*380, ((idx)*380)+1000]
     if(idx = 0){
       this.range[0] = -200
       this.range[1] = 2500
@@ -264,19 +311,27 @@ class PoemFlow{
 
   drawMove(){
 
-    this.locN.y = 100+ map(constrain(drawCount,this.range[0],this.range[1]),this.range[0],this.range[1],height+100,0)
-    this.locN.x = (200 + noise(drawCount/500, this.locN.y/500)*200)
+    this.locN.y = map(constrain(drawCount,this.range[0],this.range[1]),this.range[0],this.range[1],height+100,0)
+    this.locN.x = (20+ noise(drawCount/500, this.locN.y/500)*200)
 
     let opacH = map(constrain(drawCount,this.range[0],this.range[1]),this.range[0],this.range[1],255,0)
     opacH = int(opacH)
     // opacT = map(opacT, this.range[0],this.range[1], 255*.8, 0)
     // let opacT = 255;
     textSize(24)
+    textAlign(LEFT)
     noStroke();
     // fill(red(this.color), green(this.color), blue(this.color) ,opacH)
     this.color.setAlpha(opacH)
     fill(this.color)
     // this.color.setAlpha(this.color.alpha-.5);
     text( this.PoemLine, this.locN.x, this.locN.y)
+  }
+}
+
+
+class dataPoint{
+  constructor(){
+
   }
 }
