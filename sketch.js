@@ -117,12 +117,12 @@ poemLines[0].color = color(186, 161, 48)
 
 function drawTickers(){
 
-  if(drawCount<800){
+  if(drawCount<1200){
     return
   }
 
-let lineOpac = int(map(constrain(drawCount,800,1200),500,2000,0,150));
-let textOpac = int(map(constrain(drawCount,1000,1200),800,2000,0,150));
+let lineOpac = int(map(constrain(drawCount,1200,1500),500,2000,0,150));
+let textOpac = int(map(constrain(drawCount,1400,1500),800,2000,0,150));
 
 // let lineOpac = 255
 // let textOpac = 255
