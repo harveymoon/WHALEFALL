@@ -18,13 +18,13 @@ var sliderOffsetY = -100;
 
 var poem = [
   ["whalefall"],
-  ["the mighty leviathan,"],
-  ["king of the seas,"],
+  ["the mighty leviathan"],
+  ["king of the seas"],
   ["has been discarded"],
   ["a giant carcass"],
   ["they cut it open"],
   ["knives slicing through"],
-  ["the blubber, oil and meat,"],
+  ["the blubber, oil and meat"],
   ["miraculous plenty"],
   ["they take whatever they can"],
   ["leaving nothing behind"],
