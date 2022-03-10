@@ -3,7 +3,7 @@ var Bimg;
 var timer = 0;
 var particles = [];
 
-var pos = 0.5;
+var pos = 2;
 var whalePos = -250;
 var sliderPos = 0;
 
@@ -13,7 +13,8 @@ var viewState = 0;
 
 var timeData;
 
-var sliderOffsetY = -3500;
+var sliderOffsetY = -100;
+
 
 var poem = [
   ["whalefall"],
@@ -90,8 +91,9 @@ let imgCount = 0;
 
 function setup() {
   createCanvas(1280, 800);
-  // noSmooth()
-  smooth()
+  noSmooth()
+  pixelDensity(2);
+  // smooth()
 
   bgImg = createGraphics(width, height);
 
@@ -105,12 +107,15 @@ function setup() {
   noStroke();
   textWrap(WORD);
 
-for(let pl = 0; pl < poem.length; pl++){
-  let newLine = new PoemFlow(poem[pl], pl)
-  poemLines.push(newLine )
-}
+  for(let pl = 0; pl < poem.length; pl++){
+    let newLine = new PoemFlow(poem[pl], pl)
+    poemLines.push(newLine )
+  }
 
-poemLines[0].color = color(186, 161, 48)
+  poemLines[0].color = color(186, 161, 48)
+
+  sliderOffsetY = -(200*(year()-2000))+1000;
+  console.log(sliderOffsetY)
 
 }
 
@@ -121,14 +126,14 @@ function drawTickers(){
     return
   }
 
-let lineOpac = int(map(constrain(drawCount,1200,1500),500,2000,0,150));
-let textOpac = int(map(constrain(drawCount,1400,1500),800,2000,0,150));
+let lineOpac = int(map(constrain(drawCount,1200,1500),1200,1500,0,200));
+let textOpac = int(map(constrain(drawCount,1400,1900),1400,1900,0,200));
 
 // let lineOpac = 255
 // let textOpac = 255
 
 
-textSize(13)
+textSize(14)
 for(let lineN = 0; lineN <200; lineN++){
   if(lineN%2 == 0){
   stroke(200, lineOpac)
@@ -165,7 +170,15 @@ for(let lineN = 0; lineN <200; lineN++){
 function mouseWheel(event) {
   // print(pos);
   //move the square according to the vertical scroll amount
-  pos += constrain(event.delta, -20, 20);
+  if(viewState>0){
+     pos += constrain(event.delta, -50, 50);
+  
+if(pos < sliderOffsetY){
+  pos = sliderOffsetY
+  }
+}
+
+ 
 }
 
 // let lastPic = 0;
@@ -221,24 +234,33 @@ for (let pl = 0; pl < poemLines.length; pl++) {
 
   // let tintAmt = map(pos, 0, -10000, 255, 0);
   // tint(255, tintAmt); // Apply transparency without
-    if (sliderPos != pos) {
-    sliderPos += constrain( (pos - sliderPos) / 10, -1,1);
+
+let sliderGo = constrain(pos, sliderOffsetY, 100000)
+
+    if (sliderPos != sliderGo) {
+    sliderPos += (sliderGo - sliderPos) / 15;
   }
 
-  if (whalePos != pos) {
-    whalePos += constrain( (pos - whalePos) / 250, -1,1);
+
+let WhaleGo = constrain(pos, -100, height-150)
+if(viewState== 0){
+  WhaleGo = pos;
+}
+
+
+  if (whalePos != WhaleGo) {
+    whalePos += constrain( (WhaleGo - whalePos) / 250, -1,1);
   }
 
 
 
-  if(whalePos > 0){
-    if(viewState == 0){
+
+  if(drawCount > 900 && viewState == 0){
        pos = height-400
       viewState++
       console.log("viewState : " + viewState)
     }
-   
-  }
+
   // pos += 0.1;
   image(Bimg, width / 2 - Bimg.width / 2,  whalePos);
 
@@ -281,13 +303,21 @@ class particle {
   }
 
   drawIt() {
+    rectMode(CENTER)
     this.timer++;
-    // if(this.timer > 1000){
-    //   return
-    // }
+
+    if(this.timer > 5000){
+      return
+    }
 
     fill(this.color);
-    rect(this.loc.x * 4, this.loc.y * 4, 4.5, 4.5);
+    push()
+    translate(this.loc.x * 4, this.loc.y * 4)
+    let rotAmt = noise(this.loc.x/1000, this.loc.y/1000)*360
+    rotAmt *= map(constrain(this.timer,0,500),0,500,0,1)
+    rotate(rotAmt)
+    rect(0,0, 4.5, 4.5);
+    pop()
     if (this.timer > 10) {
       this.loc.y -= 0.075;
       this.loc.x += (noise(this.loc.x / 25, this.loc.y / 25) - 0.5) / 4;
@@ -302,7 +332,10 @@ class PoemFlow{
     this.PoemLine = textLine;
     this.color = color(255,255,255)
     this.locN = createVector(50, height);
-    this.range = [(idx)*380, ((idx)*380)+1000]
+
+    let shiftAmmt = random(350,450)
+    this.range = [(idx)*shiftAmmt, ((idx)*shiftAmmt)+1000]
+    
     if(idx = 0){
       this.range[0] = -200
       this.range[1] = 2500
