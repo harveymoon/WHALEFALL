@@ -333,7 +333,7 @@ class PoemFlow{
     this.color = color(255,255,255)
     this.locN = createVector(50, height);
 
-    let shiftAmmt = random(350,450)
+    let shiftAmmt = random(380,420)
     this.range = [(idx)*shiftAmmt, ((idx)*shiftAmmt)+1000]
     
     if(idx = 0){
